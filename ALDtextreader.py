@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Apr  7 15:24:12 2024
+Created on Sun May 12 15:24:12 2024
 
 @author: tbbra
 """
@@ -8,53 +8,95 @@ Created on Sun Apr  7 15:24:12 2024
 import numpy as np
 import matplotlib.pyplot as plt
 
-#MAKE SURE TO: delete all the headers from the text file,
-# this is the text file from the pressure not the elipsometry
+# SCROLL TO BOTOM AND FILL OUT DT AND FILENAME
 
-file = open("C:\\Users\\tbbra\\OneDrive\\Documents\\CNT research - vanfleet\\Baseline\\20 cycles Alumna test.txt", "r")
-content = file.read()
 
-time = []
-pressure = []
-wholething = []
-curindex = 0
-imagindex = 0
-try:
-    while (True):
-        if (imagindex >= len(content)):
-            break
-        char = content[imagindex]
+class textReader:
+    import numpy as np
+    import matplotlib.pyplot as plt
+    def __init__(self,filename):
         
-        if(char.isspace()):
-            endindex = imagindex
-            wholething.append(content[curindex:endindex])
-            curindex = endindex + 1
-        imagindex += 1
-except EOFError or IndexError:
-    pass
-
-file.close()
-
-
-#now that everything is in a list we need to get the right information
-
-for i in range(len( wholething)):
-    if (i % 30 == 0):
-        time.append(wholething[i])
-    if (i % 30 == 2):
-        pressure.append(float(wholething[i]))
+        self.file = filename
         
-#ACTION look ag the time array and see what the delta t is
 
-dt = 1/9
-L = dt* len(time)
-N = len(time)
-t = np.linspace(0,L,N)
+    def readstuff(self,filename, cols):
+        self.vals = []
+        file = open(filename, "r")
+        content = file.read()
+        #lets get the right number of rows and cols
+        wholething = []
+
+        curindex = 0
+        imagindex = 0
+        try:
+            while (True):
+                if (imagindex >= len(content)):
+                    break
+                char = content[imagindex]
+                
+                if(char == '\n' or char == '\t'):
+                    endindex = imagindex
+                    wholething.append(content[curindex:endindex])
+                    curindex = endindex + 1
+                imagindex += 1
+        except EOFError or IndexError:
+            pass
+        file.close()
         
-#ploting now
-plt.figure()
-plt.plot(pressure)
-#charnge your axis and label
-plt.xlabel("time (seconds)")
-plt.ylabel("Pressure (Torr)")
-plt.title("Alummina basline pressures")
+        rows = round(len(wholething)/cols)
+        #orgainzed array of arrays
+        self.vals = [ [[] for i in range(rows)] for i in range(cols)]
+        
+        #now organize into vals
+        try: 
+            for i in range(rows):
+                for j in range(cols):
+                    try:
+                        self.vals[j][i] = float(wholething[i*cols + j])
+                    except ValueError:
+                        self.vals[j][i] = wholething[i*cols + j]
+        except IndexError:
+            pass
+        
+        return self
+    
+    def makeGraphs(self,array,start,end,xlabel,ylabel,title,dt):
+        
+        
+        #how big should T be
+        ending = round(dt*(end))
+        # put the delta T in the cell below in seconds
+        time = np.linspace(start*dt,ending,end)
+
+        #extra code to seperate different things
+        plt.figure()
+        plt.plot(time[start:end],array[start:end])
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+        plt.grid()
+        plt.title(title)
+        
+#ACTION: what is the filename
+
+filename = "lvtemporary_733782.tmp.txt"
+
+#ACTION: what is the dt 
+dt = .1
+
+#ACTION what is the start and end, the end is 6000
+start = 10
+end = 6000
+
+#ACTION how many cols are there (should be 20)
+
+cols = 20
+
+#ACTION what col do you want to graph, 0 based
+
+col = 1
+
+text = textReader(filename)
+
+var = text.readstuff(filename, cols)
+
+text.makeGraphs(var.vals[col], start, end, "Time (Sec)", "Pressure(Torr)", "Last couple of cycles", dt)
