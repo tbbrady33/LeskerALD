@@ -68,6 +68,50 @@ class csvstuff:
                     self.vals[cols][rows] = (float(row[int(cols)]))
         return self
     
+    def timeArray(self,array, start,end):
+        for i in range(end - start):
+            array[i + start] = array[i+start][:-3]
+        
+        newtime = []
+        starthour = array[start][:2]
+        startmin = array[start][3:5]
+        startsec = array[start][6:]
+        curhour = starthour
+        skipcount = 0
+        for i in range(end - start):
+            if curhour == array[i+ start][:2]:
+                if startmin == array[i+start][3:5]:
+                    if len(newtime)== 0:
+                        curtimesec = float(array[i + start][6:])
+                    else:
+                        curtimesec = float(array[i + start][6:]) - newtime[-1] + self.hourtosec(float(starthour)) + self.mintosec(float(startmin))
+                    newtime.append(curtimesec + self.hourtosec(starthour + 60*skipcount) + self.mintosec(startmin))
+                else:
+                    startmin = array[i+start][3:5]
+                    curtimesec = float(array[i + start][6:]) - newtime[-1]
+                    newtime.append(curtimesec + self.hourtosec(starthour + 60*skipcount) + self.mintosec(startmin))
+                    
+            else:
+                starthour = array[i+start][:2]
+                if startmin == array[i+start][3:5]:
+                    if len(newtime)== 0:
+                        curtimesec = float(array[i + start][6:])
+                    else:
+                        curtimesec = float(array[i + start][6:]) - newtime[-1] + self.hourtosec(float(starthour)) + self.mintosec(float(startmin))
+                    newtime.append(curtimesec + self.hourtosec(starthour + 60*skipcount) + self.mintosec(startmin))
+                else:
+                    startmin = array[i+start][3:5]
+                    curtimesec = float(array[i + start][6:]) - newtime[-1]
+                    newtime.append(curtimesec + self.hourtosec(starthour + 60*skipcount) + self.mintosec(startmin))
+                
+            
+        return array
+    def hourtosec(self,hour):
+        return hour*3600
+    
+    def mintosec(self, minute):
+        return minute*60
+    
     def average(self, array, start, end):
         sum = 0
         for indexs in array[start:end]:
@@ -105,7 +149,7 @@ var = csvs.readstufff(filename,num)
 #now what graphs do you want to make? (the number of rows is printed to the right)
 #what col?
 column = 2
-
+thing = csvs.timeArray(var.vals[0], 10, num-100)
 
 csvs.makeGraphs(var.vals[column], 10, num-100, "time", "Concentration (%)", "Trial 1", csvs.dt) #ACTION put the labels titles and start row
 # you can make more than graph in the same format as above
