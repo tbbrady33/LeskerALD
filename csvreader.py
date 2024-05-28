@@ -11,9 +11,8 @@ import matplotlib.pyplot as plt
 # SCROLL TO BOTOM AND FILL OUT DT AND FILENAME
 
 class csvstuff:
-    def __init__(self,dt,filename):
+    def __init__(self,filename):
         # what is the dt
-        self.dt = dt
         
         #what is the filename
         self.filename = filename
@@ -83,29 +82,31 @@ class csvstuff:
                 if startmin == array[i+start][3:5]:
                     if len(newtime)== 0:
                         curtimesec = float(array[i + start][6:])
+                        newtime.append(curtimesec + self.hourtosec(float(starthour)) + self.mintosec(float(startmin)))
                     else:
                         curtimesec = float(array[i + start][6:]) - newtime[-1] + self.hourtosec(float(starthour)) + self.mintosec(float(startmin))
-                    newtime.append(curtimesec + self.hourtosec(starthour + 60*skipcount) + self.mintosec(startmin))
+                        newtime.append(curtimesec + newtime[-1])
                 else:
                     startmin = array[i+start][3:5]
-                    curtimesec = float(array[i + start][6:]) - newtime[-1]
-                    newtime.append(curtimesec + self.hourtosec(starthour + 60*skipcount) + self.mintosec(startmin))
+                    curtimesec = float(array[i + start][6:]) + self.hourtosec(float(starthour)) + self.mintosec(float(startmin)) - newtime[-1]
+                    newtime.append(curtimesec + self.hourtosec(float(starthour)) + self.mintosec(float(startmin)))
                     
             else:
                 starthour = array[i+start][:2]
                 if startmin == array[i+start][3:5]:
                     if len(newtime)== 0:
                         curtimesec = float(array[i + start][6:])
+                        newtime.append(curtimesec + self.hourtosec(float(starthour)) + self.mintosec(float(startmin)))
                     else:
                         curtimesec = float(array[i + start][6:]) - newtime[-1] + self.hourtosec(float(starthour)) + self.mintosec(float(startmin))
-                    newtime.append(curtimesec + self.hourtosec(starthour + 60*skipcount) + self.mintosec(startmin))
+                        newtime.append(curtimesec + newtime[-1])
                 else:
                     startmin = array[i+start][3:5]
-                    curtimesec = float(array[i + start][6:]) - newtime[-1]
-                    newtime.append(curtimesec + self.hourtosec(starthour + 60*skipcount) + self.mintosec(startmin))
+                    curtimesec = float(array[i + start][6:]) + self.hourtosec(float(starthour)) + self.mintosec(float(startmin)) - newtime[-1]
+                    newtime.append(curtimesec + self.hourtosec(float(starthour)) + self.mintosec(float(startmin)))
                 
             
-        return array
+        return newtime
     def hourtosec(self,hour):
         return hour*3600
     
@@ -119,13 +120,11 @@ class csvstuff:
         
         return sum/len(array[start:end])
             
-    def makeGraphs(self,array,start,end,xlabel,ylabel,title,dt):
+    def makeGraphs(self,array,start,end,xlabel,ylabel,title,time):
         
         
         #how big should T be
-        ending = dt*(end)
-        # put the delta T in the cell below in seconds
-        time = np.arange(start *dt,ending,dt)
+        
         #extra code to seperate different things
         plt.figure()
         plt.plot(time,array[start:end])
@@ -134,13 +133,11 @@ class csvstuff:
         plt.grid()
         plt.title(title)
     
-#what is dt 
-dt = 1
 
 #ACTION: What is the filename in the current directory
 filename = "Recording Set 2024.05.09-15.51.50 (1).csv"
 
-csvs = csvstuff(dt,filename)
+csvs = csvstuff(filename)
 
 num = csvs.numRows(filename)
 
@@ -149,9 +146,13 @@ var = csvs.readstufff(filename,num)
 #now what graphs do you want to make? (the number of rows is printed to the right)
 #what col?
 column = 2
-thing = csvs.timeArray(var.vals[0], 10, num-100)
 
-csvs.makeGraphs(var.vals[column], 10, num-100, "time", "Concentration (%)", "Trial 1", csvs.dt) #ACTION put the labels titles and start row
+#ACTION what is the beggining and end index you would like to graph
+start = 10
+end = num - 100
+thing = csvs.timeArray(var.vals[0], start, end)
+
+csvs.makeGraphs(var.vals[column], start, end, "time", "Concentration (%)", "Trial 1",thing) #ACTION put the labels titles and start row
 # you can make more than graph in the same format as above
 
 #average stuff if you want
