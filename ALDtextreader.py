@@ -59,6 +59,49 @@ class textReader:
             pass
         
         return self
+    def timeArray(self,array, start,end):
+        for i in range(end - start):
+            array[i + start] = array[i+start][:-3]
+        
+        newtime = []
+        starthour = array[start][:2]
+        startmin = array[start][3:5]
+        startsec = array[start][6:]
+        curhour = starthour
+        skipcount = 0
+        for i in range(end - start):
+            if curhour == array[i+ start][:2]:
+                if startmin == array[i+start][3:5]:
+                    if len(newtime)== 0:
+                        curtimesec = float(array[i + start][6:])
+                        newtime.append(curtimesec + self.hourtosec(float(starthour)) + self.mintosec(float(startmin)))
+                    else:
+                        curtimesec = float(array[i + start][6:]) - newtime[-1] + self.hourtosec(float(starthour)) + self.mintosec(float(startmin))
+                        newtime.append(curtimesec + newtime[-1])
+                else:
+                    startmin = array[i+start][3:5]
+                    curtimesec = float(array[i + start][6:]) + self.hourtosec(float(starthour)) + self.mintosec(float(startmin)) - newtime[-1]
+                    newtime.append(curtimesec + self.hourtosec(float(starthour)) + self.mintosec(float(startmin)))
+                    
+            else:
+                starthour = array[i+start][:2]
+                if startmin == array[i+start][3:5]:
+                    if len(newtime)== 0:
+                        curtimesec = float(array[i + start][6:])
+                        newtime.append(curtimesec + self.hourtosec(float(starthour)) + self.mintosec(float(startmin)))
+                    else:
+                        curtimesec = float(array[i + start][6:]) - newtime[-1] + self.hourtosec(float(starthour)) + self.mintosec(float(startmin))
+                        newtime.append(curtimesec + newtime[-1])
+                else:
+                    startmin = array[i+start][3:5]
+                    curtimesec = float(array[i + start][6:]) + self.hourtosec(float(starthour)) + self.mintosec(float(startmin)) - newtime[-1]
+                    newtime.append(curtimesec + self.hourtosec(float(starthour)) + self.mintosec(float(startmin)))
+                    
+    def hourtosec(self,hour):
+        return hour*3600
+ 
+    def mintosec(self, minute):
+        return minute*60
     
     def makeGraphs(self,array,start,end,xlabel,ylabel,title,dt):
         
@@ -78,7 +121,7 @@ class textReader:
         
 #ACTION: what is the filename
 
-filename = "lvtemporary_733782.tmp.txt"
+filename = "presure, depo.txt"
 
 #ACTION: what is the dt 
 dt = .1
@@ -95,8 +138,12 @@ cols = 20
 
 col = 1
 
+
+
 text = textReader(filename)
 
+
 var = text.readstuff(filename, cols)
+thing = text.timeArray(var.vals[0], start, end)
 
 text.makeGraphs(var.vals[col], start, end, "Time (Sec)", "Pressure(Torr)", "Last couple of cycles", dt)
