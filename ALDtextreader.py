@@ -19,7 +19,7 @@ class textReader:
         self.file = filename
         
 
-    def readstuff(self,filename, cols):
+    def readstuff(self,filename):
         self.vals = []
         file = open(filename, "r")
         content = file.read()
@@ -42,22 +42,22 @@ class textReader:
         except EOFError or IndexError:
             pass
         file.close()
-        
-        rows = round(len(wholething)/cols)
+        cols = wholething[0].count(',') + 1
+        # print(cols)
+        rows = len(wholething)
+        # print(rows)
         #orgainzed array of arrays
         self.vals = [ [[] for i in range(rows)] for i in range(cols)]
         
-        #now organize into vals
-        try: 
-            for i in range(rows):
-                for j in range(cols):
-                    try:
-                        self.vals[j][i] = float(wholething[i*cols + j])
-                    except ValueError:
-                        self.vals[j][i] = wholething[i*cols + j]
-        except IndexError:
-            pass
-        
+        # Now organize into vals
+        for i in range(rows):
+            split_row = wholething[i].split(',')
+            for j in range(cols):
+                try:
+                    self.vals[j][i] = split_row[j]
+                except IndexError:
+                    pass
+    
         return self
     def timeArray(self,array, start,end):
         for i in range(end - start):
@@ -103,36 +103,40 @@ class textReader:
     def mintosec(self, minute):
         return minute*60
     
-    def makeGraphs(self,array,start,end,xlabel,ylabel,title,dt):
+    def makeGraphs(self,data_series,start,end,xlabel,ylabel,title,dt):
+        start = int(start/dt)
+        end = int(end/dt)
+        # Ensure data_series contains only numeric values
+       
         
-        
-        #how big should T be
-        ending = round(dt*(end))
-        # put the delta T in the cell below in seconds
-        time = np.linspace(start*dt,ending,end)
+        data_series = [float(value) if str(value).replace('.', '', 1).isdigit() else None for value in data_series]
+        data_series = [value for value in data_series if value is not None]
 
-        #extra code to seperate different things
+        #how big should T be
+        # put the delta T in the cell below in seconds
+        sliced_data = data_series[start:end]
+
+         # Make time array that matches the data
+        time = np.linspace(start*dt, end*dt, len(sliced_data))
+
+        # Extra code to separate different things
         plt.figure()
-        plt.plot(time[start:end],array[start:end])
+        plt.plot(time, sliced_data)
+        plt.ticklabel_format(style='plain', axis='x')
+
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
         plt.grid()
         plt.title(title)
+        plt.show()
+        return 0
         
 #ACTION: what is the filename
 
-filename = "presure, depo.txt"
+filename = r'C:\Users\tbbra\Documents\CNT research - vanfleet\Ozone testing\Try 3\d.txt'
 
 #ACTION: what is the dt 
 dt = .1
-
-#ACTION what is the start and end, the end is 6000
-start = 10
-end = 6000
-
-#ACTION how many cols are there (should be 20)
-
-cols = 20
 
 #ACTION what col do you want to graph, 0 based
 
@@ -143,7 +147,18 @@ col = 1
 text = textReader(filename)
 
 
-var = text.readstuff(filename, cols)
-thing = text.timeArray(var.vals[0], start, end)
+var = text.readstuff(filename)
 
-text.makeGraphs(var.vals[col], start, end, "Time (Sec)", "Pressure(Torr)", "Last couple of cycles", dt)
+#ACTION: start and end in seconds for both!
+start = 68000
+
+end = (len(var.vals[col]) - 1) *dt
+
+# thing = text.timeArray(var.vals[0], start, end)
+# print(len(thing))
+print(len(var.vals[col]))
+
+#action: title for graph
+title = 'Pressure vs Time'
+
+text.makeGraphs(var.vals[col], start, end, "Time (Sec)", "Pressure(Torr)", title, dt)
