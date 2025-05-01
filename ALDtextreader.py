@@ -7,16 +7,16 @@ Created on Sun May 12 15:24:12 2024
 
 import numpy as np
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 # SCROLL TO BOTOM AND FILL OUT DT AND FILENAME
 
 
-class textReader:
-    import numpy as np
-    import matplotlib.pyplot as plt
+class TextReader:
     def __init__(self,filename):
         
         self.file = filename
+        self.vals = []
         
 
     def readstuff(self,filename):
@@ -59,44 +59,30 @@ class textReader:
                     pass
     
         return self
-    def timeArray(self,array, start,end):
-        for i in range(end - start):
-            array[i + start] = array[i+start][:-3]
+    def finddt(self):
+        # Find the delta t in seconds
+        # Assuming the first column is time in seconds
+        time_col = self.vals[0]
+
+        minutes, seconds = time_col[0].split(':')
+        total_seconds = int(minutes) * 60 + float(seconds)  
+
+        minutes, seconds = time_col[1].split(':')
+        next_total_seconds = int(minutes) * 60 + float(seconds)
+
+        dt = next_total_seconds - total_seconds
+
+        return dt  
         
-        newtime = []
-        starthour = array[start][:2]
-        startmin = array[start][3:5]
-        startsec = array[start][6:]
-        curhour = starthour
-        skipcount = 0
-        for i in range(end - start):
-            if curhour == array[i+ start][:2]:
-                if startmin == array[i+start][3:5]:
-                    if len(newtime)== 0:
-                        curtimesec = float(array[i + start][6:])
-                        newtime.append(curtimesec + self.hourtosec(float(starthour)) + self.mintosec(float(startmin)))
-                    else:
-                        curtimesec = float(array[i + start][6:]) - newtime[-1] + self.hourtosec(float(starthour)) + self.mintosec(float(startmin))
-                        newtime.append(curtimesec + newtime[-1])
-                else:
-                    startmin = array[i+start][3:5]
-                    curtimesec = float(array[i + start][6:]) + self.hourtosec(float(starthour)) + self.mintosec(float(startmin)) - newtime[-1]
-                    newtime.append(curtimesec + self.hourtosec(float(starthour)) + self.mintosec(float(startmin)))
-                    
-            else:
-                starthour = array[i+start][:2]
-                if startmin == array[i+start][3:5]:
-                    if len(newtime)== 0:
-                        curtimesec = float(array[i + start][6:])
-                        newtime.append(curtimesec + self.hourtosec(float(starthour)) + self.mintosec(float(startmin)))
-                    else:
-                        curtimesec = float(array[i + start][6:]) - newtime[-1] + self.hourtosec(float(starthour)) + self.mintosec(float(startmin))
-                        newtime.append(curtimesec + newtime[-1])
-                else:
-                    startmin = array[i+start][3:5]
-                    curtimesec = float(array[i + start][6:]) + self.hourtosec(float(starthour)) + self.mintosec(float(startmin)) - newtime[-1]
-                    newtime.append(curtimesec + self.hourtosec(float(starthour)) + self.mintosec(float(startmin)))
-                    
+
+    
+    def summary_stats():
+        return 0
+    
+    def getColumn(self, colString):
+
+        return 
+            
     def hourtosec(self,hour):
         return hour*3600
  
@@ -131,34 +117,25 @@ class textReader:
         plt.show()
         return 0
         
-#ACTION: what is the filename
+    def saveSubset():
+        return 0
+if __name__ == "__main__":
+    # ACTION: what is the filename
+    filename = r'C:\Users\tbbra\Documents\CNT research - vanfleet\Ozone testing\Try 3\d.txt'
 
-filename = r'C:\Users\tbbra\Documents\CNT research - vanfleet\Ozone testing\Try 3\d.txt'
+    # ACTION what col do you want to graph, 0 based
+    col = 1
 
-#ACTION: what is the dt 
-dt = .1
+    text = TextReader(filename)
+    var = text.readstuff(filename)
 
-#ACTION what col do you want to graph, 0 based
+    dt = text.finddt()
 
-col = 1
+    # ACTION: start and end in seconds for both!
+    start = 68000
+    end = (len(var.vals[col]) - 1) * dt
 
+    # ACTION: title for graph
+    title = 'Pressure vs Time'
+    text.makeGraphs(var.vals[col], start, end, "Time (Sec)", "Pressure (Torr)", title, dt)
 
-
-text = textReader(filename)
-
-
-var = text.readstuff(filename)
-
-#ACTION: start and end in seconds for both!
-start = 68000
-
-end = (len(var.vals[col]) - 1) *dt
-
-# thing = text.timeArray(var.vals[0], start, end)
-# print(len(thing))
-print(len(var.vals[col]))
-
-#action: title for graph
-title = 'Pressure vs Time'
-
-text.makeGraphs(var.vals[col], start, end, "Time (Sec)", "Pressure(Torr)", title, dt)
