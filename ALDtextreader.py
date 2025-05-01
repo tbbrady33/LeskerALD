@@ -76,12 +76,17 @@ class TextReader:
         
 
     
-    def summary_stats():
-        return 0
+    def summary_stats(self, column):
+        # Calculate summary statistics for a given column
+        # Convert the column to a numpy array for easier calculations
+        column_data = np.array(self.vals[column], dtype=float)
+        mean = np.mean(column_data)
+        median = np.median(column_data)
+        std_dev = np.std(column_data)
+        min_val = np.min(column_data)
+        max_val = np.max(column_data)
+        return mean, median, std_dev, min_val, max_val
     
-    def getColumn(self, colString):
-
-        return 
             
     def hourtosec(self,hour):
         return hour*3600
@@ -119,7 +124,10 @@ class TextReader:
         
     def saveSubset():
         return 0
+    
+
 if __name__ == "__main__":
+    # ACTION make your code her, there are lots of helpers in the class above
     # ACTION: what is the filename
     filename = r'C:\Users\tbbra\Documents\CNT research - vanfleet\Ozone testing\Try 3\d.txt'
 
