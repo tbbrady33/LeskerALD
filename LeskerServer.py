@@ -11,7 +11,7 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 Host = 'localhost'  # The server's hostname or IP address
-Port = 5000         # The port used by the server
+Port = 5000       # The port used by the server
 
 # Create a TCP/IP socket that closes on its own when the program ends
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -38,11 +38,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
                 # Receive the data in small chunks and retransmit it
                 with connection:
                     print(f"Connected by {client_address}")
-                    while True:
-                        data = connection.recv(1024)
-                        if not data:
-                            break
-                        print(f"Received: {data.decode()}")
+                    
+                    send_data = b"Hello, world"
+                    print(f"Sending data: {send_data}")
+                    connection.sendall(send_data)
 
             finally:
                 # Clean up the connection
