@@ -9,7 +9,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
 
     # Bind the socket to the address and port
     server_address = (Host,Port)
-    print >>sys.stderr, 'starting up on %s port %s' % server_address
+    print('starting up on %s port %s' % server_address, file=sys.stderr)
     sock.bind(server_address)
 
     #listen for incoming connections by setting the socket to listen mode
@@ -17,10 +17,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
 
     while True:
         # Wait for a connection
-        print >>sys.stderr, 'waiting for a connection'
+        print('waiting for a connection', file=sys.stderr)
         connection, client_address = sock.accept()
         try:
-            print >>sys.stderr, 'connection from', client_address
+            print('connection from', client_address, file=sys.stderr)
 
             # Receive the data in small chunks and retransmit it
             with connection:
