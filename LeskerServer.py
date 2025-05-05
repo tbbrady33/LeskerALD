@@ -11,11 +11,10 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 Host = 'localhost'  # The server's hostname or IP address
-Port = 5000       # The port used by the server
+Port = 5001       # The port used by the server
 
 # Create a TCP/IP socket that closes on its own when the program ends
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-    # Bind the socket to the address and port
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:    # Bind the socket to the address and port
     server_address = (Host, Port)
     print('starting up on %s port %s' % server_address, file=sys.stderr)
     sock.bind(server_address)
