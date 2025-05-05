@@ -39,9 +39,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
                 with connection:
                     print(f"Connected by {client_address}")
                     
-                    send_data = b"Hello, world"
-                    print(f"Sending data: {send_data}")
-                    connection.sendall(send_data)
+                    while True:
+                        data = connection.recv(1024)
+                        if not data:
+                            break
+                        print(f"Received: {data.decode()}")
+                        # Here you can process the data as needed
+                        # For example, you could save it to a file or perform some calculations
+
 
             finally:
                 # Clean up the connection
