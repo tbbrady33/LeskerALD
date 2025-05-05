@@ -2,7 +2,7 @@ import socket
 import sys
 
 Host = 'localhost'  # The server's hostname or IP address
-Port =
+Port = 5000        # The port used by the server
 
 # Create a TCP/IP socket that closes on its own when the program ends
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
