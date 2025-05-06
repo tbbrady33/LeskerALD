@@ -6,7 +6,7 @@ import sys
 # Connection parameters
 IP = '192.168.137.11'
 PORT = 502
-REGISTER_ADDRESS = 218  # The address for the Aborted signal, based on IOID from XML
+REGISTER_ADDRESS = 218  # The address for the 3ed signal, based on IOID from XML
 SCALE_FACTOR = 1  # Scaling factor, if needed
 
 
@@ -39,7 +39,8 @@ async def read_aborted_flag():
                 print(f"Aborted Flag: {aborted_value}")
             
             await asyncio.sleep(1)  # Wait 1 second before the next read
-    
+    except ValueError:
+		pass
     finally:
         # Ensure the client is properly closed
         await client.close()
