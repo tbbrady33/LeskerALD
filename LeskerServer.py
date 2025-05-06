@@ -1,6 +1,18 @@
 import socket
-import sys
+import asyncio
 import signal
+from pymodbus.client import AsyncModbusTcpClient
+import sys
+from getpressforserver import read_pressure
+import getaborted
+
+
+# Connection parameters
+IP = '192.168.137.11'
+PORT = 502
+REGISTER_ADDRESS = 1
+SCALE_FACTOR = 0.000152590218967
+
 
 # Define the signal handler to exit gracefully
 def signal_handler(sig, frame):
@@ -38,13 +50,15 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:    # Bind the so
                 with connection:
                     print(f"Connected by {client_address}")
                     
-                    while True:
-                        data = connection.recv(1024)
-                        if not data:
-                            break
-                        print(f"Received: {data.decode()}")
-                        # Here you can process the data as needed
-                        # For example, you could save it to a file or perform some calculations
+                    data = connection.recv(1024)
+                    if not data:
+                        break
+                    print(f"Received: {data.decode()}")
+                    # Here you can process the data as needed
+                    # For example, you could save it to a file or perform some calculations
+
+                    # lets send the real time data back to the client
+                    asyncio.run(read_pressure(sock))
 
 
             finally:

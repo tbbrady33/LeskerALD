@@ -1,6 +1,7 @@
 import asyncio
 import signal
 from pymodbus.client import AsyncModbusTcpClient
+import sys
 
 # Connection parameters
 IP = '192.168.137.11'

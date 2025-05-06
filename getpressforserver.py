@@ -1,6 +1,7 @@
 import asyncio
 import signal
 from pymodbus.client import AsyncModbusTcpClient
+import sys
 
 # Connection parameters
 IP = '192.168.137.11'
@@ -15,7 +16,7 @@ def signal_handler(sig, frame):
 
 signal.signal(signal.SIGINT, signal_handler)
 
-async def read_pressure():
+async def read_pressure(sock):
     # Create the asynchronous client
     client = AsyncModbusTcpClient(IP, port=PORT)
     
@@ -38,13 +39,14 @@ async def read_pressure():
                 raw_value = response.registers[0]
                 pressure = raw_value * SCALE_FACTOR
                 print(f"Pressure: {pressure:.6f} Torr")
+                send_data = f"Pressure: {pressure:.6f} Torr"
+                send_data = send_data.encode('utf-8')
+                sock.sendall(send_data)  # Send the data to the client
             
             await asyncio.sleep(1)  # Wait 1 second before the next read
-    except KeyboardInterrupt:
-        print("Exiting.")
     finally:
         # Ensure the client is properly closed
         await client.close()
 
 # Run the asyncio loop to execute the script
-asyncio.run(read_pressure())
+asyncio.run(read_pressure(sock))
